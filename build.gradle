@@ -1,0 +1,112 @@
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath 'net.serenity-bdd:serenity-gradle-plugin:2.4.34'
+    }
+}
+
+plugins {
+    id 'java'
+}
+
+apply plugin: 'net.serenity-bdd.aggregator'
+
+group = 'com.sofka'
+version = '1.0.0'
+
+ext {
+    serenityVersion = '4.2.9'
+    webDriverManagerVersion = '5.9.1'
+    junitVersion = '4.13.2'
+    assertjVersion = '3.25.3'
+    jacksonVersion = '2.18.3'
+    slf4jVersion = '2.0.16'
+}
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(21)
+    }
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    testImplementation "net.serenity-bdd:serenity-core:${serenityVersion}"
+    testImplementation "net.serenity-bdd:serenity-junit:${serenityVersion}"
+    testImplementation "net.serenity-bdd:serenity-cucumber:${serenityVersion}"
+    testImplementation "io.github.bonigarcia:webdrivermanager:${webDriverManagerVersion}"
+    testImplementation "junit:junit:${junitVersion}"
+    testImplementation "org.assertj:assertj-core:${assertjVersion}"
+    testImplementation "com.fasterxml.jackson.core:jackson-databind:${jacksonVersion}"
+    testRuntimeOnly "org.slf4j:slf4j-simple:${slf4jVersion}"
+}
+
+test {
+    testLogging.showStandardStreams = true
+    systemProperties System.getProperties()
+}
+
+def serenityReportFile = file("${projectDir}/target/site/serenity/index.html")
+
+tasks.register('openSerenityReport') {
+    group = 'verification'
+    description = 'Opens the Serenity HTML report when it exists.'
+
+    onlyIf {
+        serenityReportFile.exists()
+    }
+
+    doLast {
+        println "Serenity report: ${serenityReportFile.toURI()}"
+
+        if (System.getenv('CI')) {
+            println 'CI environment detected. Automatic opening skipped.'
+            return
+        }
+
+        def osName = System.getProperty('os.name').toLowerCase()
+        def command = null
+
+        if (osName.contains('linux')) {
+            command = ['xdg-open', serenityReportFile.absolutePath]
+        } else if (osName.contains('mac')) {
+            command = ['open', serenityReportFile.absolutePath]
+        } else if (osName.contains('windows')) {
+            command = ['cmd', '/c', 'start', '', serenityReportFile.absolutePath]
+        }
+
+        if (command == null) {
+            println 'Unsupported OS for automatic opening. Open the report manually with the path above.'
+            return
+        }
+
+        try {
+            def process = new ProcessBuilder(command)
+                .redirectErrorStream(true)
+                .start()
+            process.waitFor()
+
+            if (process.exitValue() != 0) {
+                println 'The report could not be opened automatically. Open it manually with the path above.'
+            }
+        } catch (Exception exception) {
+            println "The report could not be opened automatically: ${exception.message}"
+            println 'Open it manually with the path above.'
+        }
+    }
+}
+
+gradle.startParameter.continueOnFailure = true
+
+tasks.named('test') {
+    finalizedBy(tasks.named('aggregate'))
+}
+
+tasks.named('aggregate') {
+    finalizedBy(tasks.named('openSerenityReport'))
+}

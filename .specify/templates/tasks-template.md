@@ -1,161 +1,101 @@
 ---
 
-description: "Task list template for feature implementation"
+description: "Task list template for Java + Serenity BDD automation features"
 ---
 
-# Tasks: [FEATURE NAME]
+# Tasks: [AUTOMATION FEATURE NAME]
 
 **Input**: Design documents from `/specs/[###-feature-name]/`
-**Prerequisites**: plan.md (required), spec.md (required for user stories), research.md, data-model.md, contracts/
+**Prerequisites**: plan.md (required), spec.md (required)
 
-**Tests**: The examples below include test tasks. Tests are OPTIONAL - only include them if explicitly requested in the feature specification.
-
-**Organization**: Tasks are grouped by user story to enable independent implementation and testing of each story.
+**Organization**: Las tareas se agrupan por User Story para mantener trazabilidad y permitir
+validación independiente de los 2 escenarios obligatorios.
 
 ## Format: `[ID] [P?] [Story] Description`
 
-- **[P]**: Can run in parallel (different files, no dependencies)
-- **[Story]**: Which user story this task belongs to (e.g., US1, US2, US3)
-- Include exact file paths in descriptions
+- **[P]**: Puede ejecutarse en paralelo (archivos distintos, sin dependencia directa)
+- **[Story]**: US1 para flujo positivo, US2 para flujo negativo
+- Cada tarea MUST incluir la ruta exacta del archivo impactado
 
 ## Path Conventions
 
-- **Single project**: `src/`, `tests/` at repository root
-- **Web app**: `backend/src/`, `frontend/src/`
-- **Mobile**: `api/src/`, `ios/src/` or `android/src/`
-- Paths shown below assume single project - adjust based on plan.md structure
+- `src/test/java/pages/` para Page Objects
+- `src/test/java/steps/` para Steps y step definitions
+- `src/test/java/runners/` para runners
+- `src/test/resources/features/` para archivos `.feature`
+- `src/test/resources/serenity.conf` para configuración
 
-<!-- 
-  ============================================================================
-  IMPORTANT: The tasks below are SAMPLE TASKS for illustration purposes only.
-  
-  The /speckit.tasks command MUST replace these with actual tasks based on:
-  - User stories from spec.md (with their priorities P1, P2, P3...)
-  - Feature requirements from plan.md
-  - Entities from data-model.md
-  - Endpoints from contracts/
-  
-  Tasks MUST be organized by user story so each story can be:
-  - Implemented independently
-  - Tested independently
-  - Delivered as an MVP increment
-  
-  DO NOT keep these sample tasks in the generated tasks.md file.
-  ============================================================================
+<!--
+  IMPORTANT:
+  - Esta plantilla asume exactamente 2 escenarios por feature: 1 positivo y 1 negativo.
+  - Las tareas de validación constitucional NO son opcionales.
+  - Sustituye todos los ejemplos por tareas concretas del feature actual.
 -->
 
-## Phase 1: Setup (Shared Infrastructure)
+## Phase 1: Setup (Infraestructura base)
 
-**Purpose**: Project initialization and basic structure
+**Purpose**: Dejar lista la base técnica del proyecto de automatización
 
-- [ ] T001 Create project structure per implementation plan
-- [ ] T002 Initialize [language] project with [framework] dependencies
-- [ ] T003 [P] Configure linting and formatting tools
-
----
-
-## Phase 2: Foundational (Blocking Prerequisites)
-
-**Purpose**: Core infrastructure that MUST be complete before ANY user story can be implemented
-
-**⚠️ CRITICAL**: No user story work can begin until this phase is complete
-
-Examples of foundational tasks (adjust based on your project):
-
-- [ ] T004 Setup database schema and migrations framework
-- [ ] T005 [P] Implement authentication/authorization framework
-- [ ] T006 [P] Setup API routing and middleware structure
-- [ ] T007 Create base models/entities that all stories depend on
-- [ ] T008 Configure error handling and logging infrastructure
-- [ ] T009 Setup environment configuration management
-
-**Checkpoint**: Foundation ready - user story implementation can now begin in parallel
+- [ ] T001 Crear o ajustar `build.gradle` con dependencias compatibles con Serenity BDD
+- [ ] T002 Crear o ajustar `src/test/resources/serenity.conf` con configuración declarativa
+- [ ] T003 [P] Crear la estructura `pages/`, `steps/`, `runners/` y `features/` según `plan.md`
 
 ---
 
-## Phase 3: User Story 1 - [Title] (Priority: P1) 🎯 MVP
+## Phase 2: Foundation (Prerequisito bloqueante)
 
-**Goal**: [Brief description of what this story delivers]
+**Purpose**: Habilitar la ejecución centralizada de Cucumber + Serenity
 
-**Independent Test**: [How to verify this story works on its own]
+**⚠️ CRÍTICO**: Ninguna User Story inicia hasta completar esta fase
 
-### Tests for User Story 1 (OPTIONAL - only if tests requested) ⚠️
+- [ ] T004 Crear o ajustar `src/test/java/runners/CucumberTestRunner.java` con `CucumberWithSerenity`
+- [ ] T005 Validar que el runner no contiene lógica de negocio ni configuración hardcodeada
 
-> **NOTE: Write these tests FIRST, ensure they FAIL before implementation**
-
-- [ ] T010 [P] [US1] Contract test for [endpoint] in tests/contract/test_[name].py
-- [ ] T011 [P] [US1] Integration test for [user journey] in tests/integration/test_[name].py
-
-### Implementation for User Story 1
-
-- [ ] T012 [P] [US1] Create [Entity1] model in src/models/[entity1].py
-- [ ] T013 [P] [US1] Create [Entity2] model in src/models/[entity2].py
-- [ ] T014 [US1] Implement [Service] in src/services/[service].py (depends on T012, T013)
-- [ ] T015 [US1] Implement [endpoint/feature] in src/[location]/[file].py
-- [ ] T016 [US1] Add validation and error handling
-- [ ] T017 [US1] Add logging for user story 1 operations
-
-**Checkpoint**: At this point, User Story 1 should be fully functional and testable independently
+**Checkpoint**: La base compila y el runner apunta correctamente a `features/` y `steps/`
 
 ---
 
-## Phase 4: User Story 2 - [Title] (Priority: P2)
+## Phase 3: User Story 1 - [Flujo positivo] (Priority: P1) 🎯 MVP
 
-**Goal**: [Brief description of what this story delivers]
+**Goal**: Automatizar el comportamiento exitoso principal
 
-**Independent Test**: [How to verify this story works on its own]
+**Independent Test**: Ejecutar únicamente el escenario positivo y observar el resultado esperado
 
-### Tests for User Story 2 (OPTIONAL - only if tests requested) ⚠️
+- [ ] T006 [P] [US1] Crear `src/test/resources/features/[feature-folder]/[positive-flow].feature`
+- [ ] T007 [P] [US1] Crear o ajustar `src/test/java/pages/[PrimaryPage].java` con `@FindBy`
+- [ ] T008 [P] [US1] Crear o ajustar `src/test/java/pages/[SecondaryPage].java` si aplica
+- [ ] T009 [US1] Crear o ajustar `src/test/java/steps/[FeatureSteps].java` con métodos `@Step` para el flujo positivo
+- [ ] T010 [US1] Implementar step definitions del escenario positivo sin duplicar localizadores
 
-- [ ] T018 [P] [US2] Contract test for [endpoint] in tests/contract/test_[name].py
-- [ ] T019 [P] [US2] Integration test for [user journey] in tests/integration/test_[name].py
-
-### Implementation for User Story 2
-
-- [ ] T020 [P] [US2] Create [Entity] model in src/models/[entity].py
-- [ ] T021 [US2] Implement [Service] in src/services/[service].py
-- [ ] T022 [US2] Implement [endpoint/feature] in src/[location]/[file].py
-- [ ] T023 [US2] Integrate with User Story 1 components (if needed)
-
-**Checkpoint**: At this point, User Stories 1 AND 2 should both work independently
+**Checkpoint**: El escenario US1 pasa por separado
 
 ---
 
-## Phase 5: User Story 3 - [Title] (Priority: P3)
+## Phase 4: User Story 2 - [Flujo negativo] (Priority: P2)
 
-**Goal**: [Brief description of what this story delivers]
+**Goal**: Automatizar la validación o rechazo del caso inválido
 
-**Independent Test**: [How to verify this story works on its own]
+**Independent Test**: Ejecutar únicamente el escenario negativo y observar el rechazo esperado
 
-### Tests for User Story 3 (OPTIONAL - only if tests requested) ⚠️
+- [ ] T011 [P] [US2] Crear `src/test/resources/features/[feature-folder]/[negative-flow].feature`
+- [ ] T012 [US2] Ajustar Page Objects existentes o crear uno nuevo para el estado de error o rechazo
+- [ ] T013 [US2] Agregar métodos `@Step` y validaciones de negocio para el flujo negativo
+- [ ] T014 [US2] Implementar step definitions del escenario negativo manteniendo independencia respecto a US1
 
-- [ ] T024 [P] [US3] Contract test for [endpoint] in tests/contract/test_[name].py
-- [ ] T025 [P] [US3] Integration test for [user journey] in tests/integration/test_[name].py
-
-### Implementation for User Story 3
-
-- [ ] T026 [P] [US3] Create [Entity] model in src/models/[entity].py
-- [ ] T027 [US3] Implement [Service] in src/services/[service].py
-- [ ] T028 [US3] Implement [endpoint/feature] in src/[location]/[file].py
-
-**Checkpoint**: All user stories should now be independently functional
+**Checkpoint**: El escenario US2 pasa por separado y no depende del estado de US1
 
 ---
 
-[Add more user story phases as needed, following the same pattern]
+## Phase 5: Polish & Constitution Validation
 
----
+**Purpose**: Validar cumplimiento integral antes de entrega
 
-## Phase N: Polish & Cross-Cutting Concerns
-
-**Purpose**: Improvements that affect multiple user stories
-
-- [ ] TXXX [P] Documentation updates in docs/
-- [ ] TXXX Code cleanup and refactoring
-- [ ] TXXX Performance optimization across all stories
-- [ ] TXXX [P] Additional unit tests (if requested) in tests/unit/
-- [ ] TXXX Security hardening
-- [ ] TXXX Run quickstart.md validation
+- [ ] T015 [P] Verificar que todos los localizadores usan `@FindBy` y no existe `driver.findElement`
+- [ ] T016 [P] Verificar que todos los métodos de negocio usan `@Step`
+- [ ] T017 [P] Verificar ausencia de código comentado y nombres ambiguos
+- [ ] T018 [P] Verificar que `serenity.conf` concentra la configuración y no hay valores hardcodeados en clases
+- [ ] T019 Ejecutar `./gradlew test aggregate`
+- [ ] T020 [P] Confirmar en el reporte Serenity que US1 y US2 aparecen en PASS
 
 ---
 
@@ -163,89 +103,46 @@ Examples of foundational tasks (adjust based on your project):
 
 ### Phase Dependencies
 
-- **Setup (Phase 1)**: No dependencies - can start immediately
-- **Foundational (Phase 2)**: Depends on Setup completion - BLOCKS all user stories
-- **User Stories (Phase 3+)**: All depend on Foundational phase completion
-  - User stories can then proceed in parallel (if staffed)
-  - Or sequentially in priority order (P1 → P2 → P3)
-- **Polish (Final Phase)**: Depends on all desired user stories being complete
-
-### User Story Dependencies
-
-- **User Story 1 (P1)**: Can start after Foundational (Phase 2) - No dependencies on other stories
-- **User Story 2 (P2)**: Can start after Foundational (Phase 2) - May integrate with US1 but should be independently testable
-- **User Story 3 (P3)**: Can start after Foundational (Phase 2) - May integrate with US1/US2 but should be independently testable
+- **Phase 1**: Sin dependencias
+- **Phase 2**: Depende de Phase 1 y bloquea el resto
+- **Phase 3 (US1)**: Depende de Phase 2
+- **Phase 4 (US2)**: Depende de Phase 2 y puede reutilizar Page Objects sin romper independencia
+- **Phase 5**: Depende de Phase 3 y Phase 4 completas
 
 ### Within Each User Story
 
-- Tests (if included) MUST be written and FAIL before implementation
-- Models before services
-- Services before endpoints
-- Core implementation before integration
-- Story complete before moving to next priority
+- Feature file antes de Step Definitions
+- Page Objects antes de Steps
+- Steps antes de validación completa
+- Cada historia debe quedar ejecutable por separado antes de continuar
 
 ### Parallel Opportunities
 
-- All Setup tasks marked [P] can run in parallel
-- All Foundational tasks marked [P] can run in parallel (within Phase 2)
-- Once Foundational phase completes, all user stories can start in parallel (if team capacity allows)
-- All tests for a user story marked [P] can run in parallel
-- Models within a story marked [P] can run in parallel
-- Different user stories can be worked on in parallel by different team members
-
----
-
-## Parallel Example: User Story 1
-
-```bash
-# Launch all tests for User Story 1 together (if tests requested):
-Task: "Contract test for [endpoint] in tests/contract/test_[name].py"
-Task: "Integration test for [user journey] in tests/integration/test_[name].py"
-
-# Launch all models for User Story 1 together:
-Task: "Create [Entity1] model in src/models/[entity1].py"
-Task: "Create [Entity2] model in src/models/[entity2].py"
-```
+- T003, T006, T007, T008 pueden ejecutarse en paralelo
+- T015, T016, T017, T018, T020 pueden ejecutarse en paralelo
 
 ---
 
 ## Implementation Strategy
 
-### MVP First (User Story 1 Only)
+### MVP First
 
-1. Complete Phase 1: Setup
-2. Complete Phase 2: Foundational (CRITICAL - blocks all stories)
-3. Complete Phase 3: User Story 1
-4. **STOP and VALIDATE**: Test User Story 1 independently
-5. Deploy/demo if ready
+1. Completar Phase 1
+2. Completar Phase 2
+3. Completar Phase 3 (US1)
+4. Validar US1 en aislamiento
 
-### Incremental Delivery
+### Full Delivery
 
-1. Complete Setup + Foundational → Foundation ready
-2. Add User Story 1 → Test independently → Deploy/Demo (MVP!)
-3. Add User Story 2 → Test independently → Deploy/Demo
-4. Add User Story 3 → Test independently → Deploy/Demo
-5. Each story adds value without breaking previous stories
-
-### Parallel Team Strategy
-
-With multiple developers:
-
-1. Team completes Setup + Foundational together
-2. Once Foundational is done:
-   - Developer A: User Story 1
-   - Developer B: User Story 2
-   - Developer C: User Story 3
-3. Stories complete and integrate independently
+1. Base lista
+2. US1 en PASS
+3. US2 en PASS
+4. Validación constitucional y Serenity report completos
 
 ---
 
 ## Notes
 
-- [P] tasks = different files, no dependencies
-- [Story] label maps task to specific user story for traceability
-- Each user story should be independently completable and testable
-- Verify tests fail before implementing
-- Commit after each task or logical group
-- Stop at any checkpoint to validate story independently
-- Avoid: vague tasks, same file conflicts, cross-story dependencies that break independence
+- Cada tarea debe mapearse a una User Story o a un gate constitucional.
+- Evitar tareas vagas, múltiples archivos sin ruta o dependencias cruzadas innecesarias.
+- No agregar una tercera User Story sin una enmienda explícita de la Constitution.
