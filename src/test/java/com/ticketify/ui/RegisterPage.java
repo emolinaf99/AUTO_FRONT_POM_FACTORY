@@ -1,4 +1,4 @@
-package com.ticketing.ui;
+package com.ticketify.ui;
 
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;

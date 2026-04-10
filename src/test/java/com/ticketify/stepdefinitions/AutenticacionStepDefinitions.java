@@ -1,7 +1,7 @@
-package com.ticketing.stepdefinitions;
+package com.ticketify.stepdefinitions;
 
-import com.ticketing.ui.RegisterPage;
-import com.ticketing.util.TestContext;
+import com.ticketify.ui.RegisterPage;
+import com.ticketify.util.TestContext;
 import io.cucumber.java.en.And;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;

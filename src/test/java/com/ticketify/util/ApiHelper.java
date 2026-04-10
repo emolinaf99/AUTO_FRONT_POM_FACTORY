@@ -1,4 +1,4 @@
-package com.ticketing.util;
+package com.ticketify.util;
 
 import java.net.URI;
 import java.net.http.HttpClient;

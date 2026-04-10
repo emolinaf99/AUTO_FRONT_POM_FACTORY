@@ -1,7 +1,7 @@
-package com.ticketing.hooks;
+package com.ticketify.hooks;
 
-import com.ticketing.util.ApiHelper;
-import com.ticketing.util.TestContext;
+import com.ticketify.util.ApiHelper;
+import com.ticketify.util.TestContext;
 import io.cucumber.java.Before;
 
 import java.util.UUID;
